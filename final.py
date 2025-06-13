@@ -96,9 +96,9 @@ def emissions_so_far(now: datetime, total_today: float) -> float:
 # --- Streamlit app main -----------------------------------------------------
 
 def main():
-    st.title("Environmental Dashboard — Live Statistics")
+    def main():
+        st.title("Environmental Dashboard — Live Statistics")
 
-    # Cache the emissions total today so we don't reload CSV each run within the same day
     @st.cache_data(ttl=SECONDS_PER_DAY)
     def get_emissions_total():
         try:
@@ -108,41 +108,40 @@ def main():
             return 0
 
     total_today_emissions = get_emissions_total()
+    placeholder = st.empty()
 
-    now = datetime.now(TZ)
+    while True:
+        now = datetime.now(TZ)
 
-    # Calculate values
-    ha_lost = hectares_lost_so_far(now)
-    ha_to_washdc = (ha_lost / 1500) * 365  # % per year assuming daily rate * 365
+        # Calculate values
+        ha_lost = hectares_lost_so_far(now)
+        ha_to_washdc = (ha_lost / 1500) * 365
 
-    plastic_produced = plastic_produced_so_far(now)
-    plastic_to_cars = plastic_produced / 1500
+        plastic_produced = plastic_produced_so_far(now)
+        plastic_to_cars = plastic_produced / 1500
 
-    ocean_plastic = ocean_plastic_entered_so_far(now)
-    ocean_to_statues = ocean_plastic / 204116
+        ocean_plastic = ocean_plastic_entered_so_far(now)
+        ocean_to_statues = ocean_plastic / 204116
 
-    microplastic = microplastic_ingested_so_far(now)
-    credit_card_equiv = ((microplastic / 5000) * 7) * 100
+        microplastic = microplastic_ingested_so_far(now)
+        credit_card_equiv = ((microplastic / 5000) * 7) * 100
 
-    acres_lost = acres_lost_so_far(now)
-    acres_to_football = acres_lost / 1.32
+        acres_lost = acres_lost_so_far(now)
+        acres_to_football = acres_lost / 1.32
 
-    co2_emitted = emissions_so_far(now, total_today_emissions)
-    pyramids = co2_emitted / 5_750_000
+        co2_emitted = emissions_so_far(now, total_today_emissions)
+        pyramids = co2_emitted / 5_750_000
 
-    # Display with Streamlit components
-    st.metric("Land lost today (hectares)", f"{ha_lost:,.0f} ha", delta=f"~{ha_to_washdc:.0f}% Washington DC per year")
-    st.metric("Plastic produced today (kilograms)", f"{plastic_produced:,.0f} kg", delta=f"~{plastic_to_cars:,.0f} cars worth")
-    st.metric("Plastic entered ocean today (kilograms)", f"{ocean_plastic:,.0f} kg", delta=f"~{ocean_to_statues:,.0f} Statues of Liberty")
-    st.metric("Microplastic ingested today (mg)", f"{microplastic:,.0f} mg", delta=f"~{credit_card_equiv:.0f}% credit card/week")
-    st.metric("Forest lost today (acres)", f"{acres_lost:,.0f} acres", delta=f"~{k_format(acres_to_football)} football fields")
-    st.metric("CO₂ emitted today (metric tons)", f"{co2_emitted:,.0f} t CO₂", delta=f"~{k_format(pyramids)} Great Pyramids of Giza")
+        # Re-render metrics without reloading page
+        with placeholder.container():
+            st.metric("Land lost today (hectares)", f"{ha_lost:,.0f} ha", delta=f"~{ha_to_washdc:.0f}% Washington DC per year")
+            st.metric("Plastic produced today (kilograms)", f"{plastic_produced:,.0f} kg", delta=f"~{plastic_to_cars:,.0f} cars worth")
+            st.metric("Plastic entered ocean today (kilograms)", f"{ocean_plastic:,.0f} kg", delta=f"~{ocean_to_statues:,.0f} Statues of Liberty")
+            st.metric("Microplastic ingested today (mg)", f"{microplastic:,.0f} mg", delta=f"~{credit_card_equiv:.0f}% credit card/week")
+            st.metric("Forest lost today (acres)", f"{acres_lost:,.0f} acres", delta=f"~{k_format(acres_to_football)} football fields")
+            st.metric("CO₂ emitted today (metric tons)", f"{co2_emitted:,.0f} t CO₂", delta=f"~{k_format(pyramids)} Great Pyramids of Giza")
 
-    # Auto-refresh every UPDATE_INTERVAL_SEC seconds
-    st_autorefresh(interval=UPDATE_INTERVAL_SEC * 1000, key="auto_refresh")
-    # Safe meta tag refresh every 10 seconds
-    #st.markdown('<meta http-equiv="refresh" content="10">', unsafe_allow_html=True)
-    # Use a meta refresh tag — 30 seconds is a good compromise
+        time.sleep(UPDATE_INTERVAL_SEC)
 
 
 if __name__ == "__main__":
