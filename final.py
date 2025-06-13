@@ -141,7 +141,12 @@ def main():
     # Auto-refresh every UPDATE_INTERVAL_SEC seconds
     #st_autorefresh(interval=UPDATE_INTERVAL_SEC * 1000, key="auto_refresh")
     # Safe meta tag refresh every 10 seconds
-    st.markdown('<meta http-equiv="refresh" content="10">', unsafe_allow_html=True)
+    #st.markdown('<meta http-equiv="refresh" content="10">', unsafe_allow_html=True)
+    # Use a meta refresh tag — 30 seconds is a good compromise
+    st.markdown(
+    '<meta http-equiv="refresh" content="30">',  # or 60 for less server load
+    unsafe_allow_html=True
+)
 
 if __name__ == "__main__":
     main()
