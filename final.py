@@ -139,9 +139,9 @@ def main():
     st.metric("CO₂ emitted today (metric tons)", f"{co2_emitted:,.0f} t CO₂", delta=f"~{k_format(pyramids)} Great Pyramids of Giza")
 
     # Auto-refresh every UPDATE_INTERVAL_SEC seconds
-    #st_autorefresh(interval=UPDATE_INTERVAL_SEC * 1000, key="auto_refresh")
+    st_autorefresh(interval=UPDATE_INTERVAL_SEC * 1000, key="auto_refresh")
     # Safe meta tag refresh every 10 seconds
-    st.markdown('<meta http-equiv="refresh" content="10">', unsafe_allow_html=True)
+    #st.markdown('<meta http-equiv="refresh" content="10">', unsafe_allow_html=True)
     # Use a meta refresh tag — 30 seconds is a good compromise
 
 
